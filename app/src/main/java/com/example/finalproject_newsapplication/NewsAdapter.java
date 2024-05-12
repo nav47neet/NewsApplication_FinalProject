@@ -46,7 +46,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull MyViewHolder holder,int position) {
 
         holder.newsTitle.setText(articleData.get(position).getTitle());
-        holder.newDescription.setText(articleData.get(position).getContent());
+        holder.newDescription.setText(articleData.get(position).getDescription());
         String urlToImage = articleData.get(position).getUrlToImage();
         new FetchImage(urlToImage,holder).start();
         holder.itemView.setOnClickListener(new View.OnClickListener() {
