@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegionFragment"
-    android:background="#8BC34A">
+    android:background="#FF9800"
+    tools:context=".RegionFragment">
 
-
-    <!-- TODO: Update blank fragment layout -->
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/regionRecyclerView"/>
 
 </FrameLayout>

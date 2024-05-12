@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     FrameLayout fLayout;
 
-    String API_KEY = "524cfe1ac8cd4abc886d4c8f5bb899cc";
+    String API_KEY = "360b65b4d11ffff15b28ed21af2b7b64";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -31,9 +31,7 @@ public class HomeFragment extends Fragment {
 
 
 
-    public HomeFragment() {
-        // Required empty public constructor
-    }
+
     ListView listView;
     List<Article> articles;
     RecyclerView recyclerView;
@@ -70,13 +68,8 @@ public class HomeFragment extends Fragment {
 
         @Override
         public void onFailure(Call<DataModel> call, Throwable throwable) {
-            Log.d("API","onFaliure"+throwable.getLocalizedMessage());
+            Log.d("API","onFaliure"+"API not called");
         }
     });
-
-
-
-
-
     }
 }

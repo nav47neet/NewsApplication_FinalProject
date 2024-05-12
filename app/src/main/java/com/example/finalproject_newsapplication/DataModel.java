@@ -1,22 +1,14 @@
 package com.example.finalproject_newsapplication;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DataModel {
-    private String status;
-    private int totalResults;
+    List<Article> articles;
+    int totalArticles;
 
-    private ArrayList<Article> articles;
 
-    public String getStatus() {
-        return status;
-    }
-
-    public int getTotalResults() {
-        return totalResults;
-    }
-
-    public ArrayList<Article> getArticles() {
+    public List<Article> getArticles() {
         return articles;
     }
 }

@@ -1,64 +1,154 @@
 package com.example.finalproject_newsapplication;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.viewmodel.CreationExtras;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RegionFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class RegionFragment extends Fragment {
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
-    public RegionFragment() {
-        // Required empty public constructor
-    }
+public class RegionFragment extends Fragment implements LocationListener {
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RegionFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RegionFragment newInstance(String param1, String param2) {
-        RegionFragment fragment = new RegionFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    LocationManager locationManager;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    String cityName;
+    RecyclerView regionRecyclerView;
+    List<Article> articles;
+    boolean isCityNameAvailable = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_region, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_region, container, false);
+
+
+        grantPermission();
+        checkLocationIsEnabledOrNot();
+        getLocation();
+
+        return rootView;
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        regionRecyclerView = view.findViewById(R.id.regionRecyclerView);
+        regionRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext()));
+        if (isCityNameAvailable) {
+            makeAPICall();
+        }
+
+    }
+
+    private void makeAPICall() {
+        RetrofitInstance.getInstance().newsAPI.searchData(cityName, NewsAPI.apiKey).enqueue(new Callback<DataModel>() {
+            @Override
+            public void onResponse(Call<DataModel> call, Response<DataModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("API", "onResponse: Success");
+                    articles = response.body().getArticles();
+                    regionRecyclerView.setAdapter(new NewsAdapter(requireActivity().getApplicationContext(), articles));
+                } else {
+                    Log.d("API", "onResponse: Response unsuccessful or body is null");
+                    // Handle unsuccessful response or null response body (e.g., show error message)
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataModel> call, Throwable throwable) {
+                Log.d("API", "onFailure" + "API not called");
+            }
+        });
+    }
+
+
+    private void checkLocationIsEnabledOrNot() {
+        LocationManager lm = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
+        boolean gpsEnabled = false;
+        boolean networkEnabled = false;
+        try {
+            gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!gpsEnabled && !networkEnabled) {
+            new AlertDialog.Builder(requireActivity()).setTitle("Enable Location Service").setCancelable(false).setPositiveButton("Enable", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                }
+            }).setNegativeButton("Cancel", null).show();
+        }
+    }
+
+    private void getLocation() {
+        try {
+            locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 50000, (LocationListener) this);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    private void grantPermission() {
+        if (ContextCompat.checkSelfPermission(requireActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        Geocoder geocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            cityName = addresses.get(0).getAdminArea();
+            isCityNameAvailable = true;
+            makeAPICall();
+            Log.d("city", cityName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

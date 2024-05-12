@@ -1,16 +1,15 @@
 package com.example.finalproject_newsapplication;
 
 public class Article {
-    private  String author;
-    private String content;
-    private String description;
-    private String publishedAt;
-    private Source source;
-    private String title;
+    String content;
+    String description;
+    String image;
+    String publishedAt;
+    Source source;
+    String title;
+    String url;
 
-    public String getAuthor() {
-        return author;
-    }
+
 
     public String getContent() {
         return content;
@@ -24,22 +23,19 @@ public class Article {
         return publishedAt;
     }
 
-    public Source getSource() {
-        return source;
-    }
+
 
     public String getUrl() {
         return url;
     }
 
     public String getUrlToImage() {
-        return urlToImage;
+        return image;
     }
 
     public String getTitle() {
         return title;
     }
 
-    private String url;
-    private String urlToImage;
+
 }
