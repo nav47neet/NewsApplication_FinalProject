@@ -18,7 +18,7 @@ public interface NewsAPI {
     );
     @GET("top-headlines?")
     Call<DataModel> categoryData(@Query("category") String category,
-                                 @Query("lan") String lan,
+                                 @Query("lang") String lang,
                                  @Query("apikey")String apiKey);
 
 }
