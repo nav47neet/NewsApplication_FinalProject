@@ -22,6 +22,11 @@
             android:label="@string/title_activity_detailed_news"
             android:theme="@style/Theme.FinalProject_NewsApplication" />
         <activity
+            android:name=".CategoryNews"
+            android:exported="false"
+            android:label="Category News"
+            android:theme="@style/Theme.FinalProject_NewsApplication" />
+        <activity
             android:name=".MainActivity"
             android:exported="true" >
             <intent-filter>

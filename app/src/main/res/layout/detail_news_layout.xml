@@ -9,8 +9,7 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="240dp"
-        android:scaleType="centerCrop"
-         />
+        android:scaleType="centerCrop" />
 
     <!-- Title and Content Container -->
     <LinearLayout
@@ -38,17 +37,22 @@
             android:layout_marginBottom="8dp"
             android:background="#7D7B7B" />
 
-        <!-- Content TextView -->
-        <TextView
-            android:id="@+id/textViewContent"
+        <!-- Content ScrollView -->
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="#474747"
-            android:textStyle="normal"
-            android:lineSpacingExtra="8dp"
-        android:text="Content" />
+            android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/textViewContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#474747"
+                android:textStyle="normal"
+                android:lineSpacingExtra="8dp"
+                android:text="Content" />
+
+        </ScrollView>
     </LinearLayout>
 
 </RelativeLayout>
